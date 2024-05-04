@@ -19,37 +19,19 @@ Example: x.x.x.x:12000
 ###      Mode collapse      ###
 ###############################
 
-#(done, saved mixed results) train for 100 epochs
-
 #didnt work
 #make model less complex
 #make model more complex
 
-# (didnt work) kernel size to 3,3 and removed 512 layer from discriminator
-# (kinda better) change only kernel size, keep 512 layer
-
-#(nope) kern 2,2
-
-#adding gaussian noise
-#(discriminator has it, generator shouldnt) applying dropout
+# (didnt work) change kernel sizes 
+# removed 512 layer from discriminator
+# (slightly better) change only kernel size, keep 512 layer
 
 #image transformations
-    #augment for more diversity
+    # augment for more diversity
     # Normalization: Scaling pixel values to a range (e.g., [0, 1]).
     # Resizing: Adjusting the image size if needed.
-    # Data Augmentation: variations of the images (e.g., rotations, flips) to improve model robustness.
-    # """
-    # from PIL import Image
-    # import torchvision.transforms as transforms
-
-    # transforms_ = [
-    #     transforms.Resize(int(img_height*1.12), Image.BICUBIC),
-    #     transforms.RandomCrop((img_height, img_width)),
-    #     transforms.RandomHorizontalFlip(),
-    #     transforms.ToTensor(),
-    #     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    # ]
-    # """
+    # Data Augmentation: variations of the images 
 
 #vanishing gradient
     #Lipschitz constraint
@@ -60,22 +42,59 @@ Example: x.x.x.x:12000
 #minibatch discrimination
 
 #WGAN
-#transfer learning
-
-# """
-# https://spotintelligence.com/2023/10/11/mode-collapse-in-gans-explained-how-to-detect-it-practical-solutions/#1_Insufficient_Model_Capacity
-# """
 ```
 
 # Architecture/Design
 ```
-def method(arg1, arg2, arg3):
-  """
-  description
-  
-  Returns:
-    None
-  Example:
-    >>> mesg, addr, port, seqRange = 'Howdy', localhost, 12000, 10
-    >>> send(mesg, addr, port, seqRange)
-  """
+  Generator(
+  (generator): Sequential(
+    (0): Sequential(
+      (0): ConvTranspose2d(100, 1024, kernel_size=(4, 4), stride=(1, 1), bias=False)
+      (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+    )
+    (1): Sequential(
+      (0): ConvTranspose2d(1024, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+    )
+    (2): Sequential(
+      (0): ConvTranspose2d(512, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+    )
+    (3): Sequential(
+      (0): ConvTranspose2d(256, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+    )
+    (4): ConvTranspose2d(128, 3, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (5): Tanh()
+  )
+)
+```
+
+```
+Discriminator(
+  (discriminator): Sequential(
+    (0): Conv2d(3, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+    (1): LeakyReLU(negative_slope=0.2)
+    (2): Sequential(
+      (0): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): InstanceNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=False)
+      (2): LeakyReLU(negative_slope=0.2)
+    )
+    (3): Sequential(
+      (0): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): InstanceNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=False)
+      (2): LeakyReLU(negative_slope=0.2)
+    )
+    (4): Sequential(
+      (0): Conv2d(256, 512, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1), bias=False)
+      (1): InstanceNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=False)
+      (2): LeakyReLU(negative_slope=0.2)
+    )
+    (5): Conv2d(512, 1, kernel_size=(4, 4), stride=(2, 2))
+  )
+)
+```
