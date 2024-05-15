@@ -8,43 +8,20 @@ Run the python notebook (.ipynb) on Google Colab
 
 # Tests and their output
 
-```python client.py```
 ```
-Example: x.x.x.x:12000
+Details:Type: WGAN-GP
+2nd attempt
+Epochs: 300
+Latent Dimension: 100
+First Layer of Generator: 1024
+Augmentation: None
+Original Dataset: 300
 ```
-
-# Error Detection
-```
-###############################
-###      Mode collapse      ###
-###############################
-
-#didnt work
-#make model less complex
-#make model more complex
-
-# (didnt work) change kernel sizes 
-# removed 512 layer from discriminator
-# (slightly better) change only kernel size, keep 512 layer
-
-#image transformations
-    # augment for more diversity
-    # Normalization: Scaling pixel values to a range (e.g., [0, 1]).
-    # Resizing: Adjusting the image size if needed.
-    # Data Augmentation: variations of the images 
-
-#vanishing gradient
-    #Lipschitz constraint
-#lack of convergence
-#loss function
-  # discriminator: binary_crossentropy
-
-#minibatch discrimination
-
-#WGAN
-```
+![](./GIF-outputs/WGAN-GP/generated-art.png)
 
 # Architecture/Design
+![](./GIF-outputs/WGAN-GP-Training-Overview.png)
+
 ```
   Generator(
   (generator): Sequential(
@@ -98,3 +75,44 @@ Discriminator(
   )
 )
 ```
+
+# Error Detection
+```
+###############################
+###      Mode collapse      ###
+###############################
+```
+![](./GIF-outputs/DCGAN/image_at_epoch_180.png)
+
+```
+####################################
+###  How to avoid Mode collapse  ###
+####################################
+
+#dont make the model more complex
+#instead try to make it less complex
+
+#WGAN uses different loss function
+#WGAN-GP introduces a gradient penalty
+  - this is to prevent discriminator to update weights 
+    not too quickly and not too slowly
+    (vanishing/exploding gradients)
+```
+```
+##############################
+###    Overly-Augmented    ###
+##############################
+```
+![](./GIF-outputs/augemented-image.png)
+```
+#image transformations
+    #avoid: 
+    # rotations, random erase, random crops, five-crop
+
+    #do the following instead:
+    # Normalization: Scaling pixel values to a range (e.g., [0, 1]).
+    # Resizing: Adjusting the image size if needed. (e.g., to 64x64)
+```
+# Gradient Penalty
+![](./GIF-outputs/gradient-penalty.png)
+![](./GIF-outputs/visualized-gradients.png)
